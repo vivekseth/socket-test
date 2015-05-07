@@ -1,15 +1,14 @@
-var net = require('net');
-var server = net.createServer(function(c) { //'connection' listener
-  console.log('client connected');
-  c.on('end', function() {
-    console.log('client disconnected');
-  });
-  c.on('data', function(data) {
-  	console.log(data);
-  	c.write('ACK\n');
+var app = require('koa')();
+var server = require('http').createServer(app.callback());
+var io = require('socket.io')(server);
+io.on('connection', function(socket){
+  socket.on('event', function(data){
+      socket.emit('res', {'payload': 'this is a payload'});
   })
-  c.write('hello\r\n');
+  socket.on('disconnect', function(){
+      console.log('disconnect');
+  })
 });
-server.listen(8124, function() { //'listening' listener
-  console.log('server bound');
-});
+server.listen(8124);
+
+
